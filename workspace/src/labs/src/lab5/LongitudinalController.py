@@ -9,12 +9,12 @@ from numpy import pi
 v_meas      = 0.0
 t0          = time.time()
 r_tire      = 0.05 # radius of the tire
-servo_pwm   = 1580.0
+servo_pwm   = 1523.0
 motor_pwm   = 1500.0
 motor_pwm_offset = 1500.0
 
 # reference speed 
-v_ref = 0.5 # give reference speed is 0.5 m/s
+v_ref = 0.1 # give reference speed is 0.5 m/s
 
 # ===================================PID longitudinal controller================================#
 class PID():
@@ -54,23 +54,30 @@ class PID():
 
 # =====================================end of the controller====================================#
 
+def callback(data):
+    global v_meas
+    vL=(data.FL/8)*pi*0.05
+    vR=(data.FR/8)*pi*0.05
+    v_meas=(vL+vR)/2
+
 # state estimation node
 def controller():
     global motor_pwm, servo_pwm, motor_pwm_offset
-    global v_ref, v_meas
+    global v_ref
     
     # Initialize node:
     rospy.init_node('simulationGain', anonymous=True)
 
-    # TODO: Add your necessary topic subscriptions / publications, depending on your preferred method of velocity estimation
+    #Add your necessary topic subscriptions / publications, depending on your preferred method of velocity estimation
     ecu_pub   = rospy.Publisher('ecu_pwm', ECU, queue_size = 10)
+    encoder   = rospy.Subscriber('encoder', Encoder, callback )
 
     # Set node rate
     loop_rate   = 50
     rate        = rospy.Rate(loop_rate)
     
-    # TODO: Initialize your PID controller here, with your chosen PI gains
-    PID_control = PID(kp = 1, ki = 1, kd = 0)
+    # Initialize your PID controller here, with your chosen PI gains
+    PID_control = PID(kp = 7.48, ki =5.03, kd = 0)
     
     while not rospy.is_shutdown():
         # calculate acceleration from PID controller.
