@@ -9,16 +9,14 @@ from numpy import pi
 v_meas      = 0.0
 t0          = time.time()
 r_tire      = 0.05 # radius of the tire
-servo_pwm   = 1512.0
+servo_pwm   = 1523.0
 motor_pwm   = 1500.0
 motor_pwm_offset = 1500.0
-
+thetaL1     = 0thetaL2     = 0
+thetaR1     = 0
+thetaR2     = 0
 # reference speed
-v_ref       = 0.5
-thetaL1     = v_ref
-thetaL2     = v_ref
-thetaR1     = v_ref
-thetaR2     = v_ref
+v_ref =0.5 # give reference speed is 0.5 m/s
 
 # ===================================PID longitudinal controller================================#
 class PID():
@@ -73,7 +71,7 @@ def callback(data):
 # state estimation node
 def controller():
     global motor_pwm, servo_pwm, motor_pwm_offset
-    global v_ref, u
+    global v_ref
 
     # Initialize node:
     rospy.init_node('simulationGain', anonymous=True)
@@ -92,7 +90,8 @@ def controller():
 
     while not rospy.is_shutdown():
         # calculate acceleration from PID controller.
-        motor_pwm =  PID_control.acc_calculate(v_ref, v_meas) + motor_pwm_offset
+        motor_pwm = PID_control.acc_calculate(v_ref, v_meas) + motor_pwm_offset
+
         # publish control command
         ecu_pub.publish( ECU(motor_pwm, servo_pwm) )
 
