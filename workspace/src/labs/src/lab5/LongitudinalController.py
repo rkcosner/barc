@@ -12,9 +12,13 @@ r_tire      = 0.05 # radius of the tire
 servo_pwm   = 1523.0
 motor_pwm   = 1500.0
 motor_pwm_offset = 1500.0
+FRk1 = 0
+FRk2 = 0
+FLk1 = 0
+FLk2 = 0
 
 # reference speed 
-v_ref = 0.1 # give reference speed is 0.5 m/s
+v_ref = 0.25 # give reference speed is 0.5 m/s
 
 # ===================================PID longitudinal controller================================#
 class PID():
@@ -55,10 +59,16 @@ class PID():
 # =====================================end of the controller====================================#
 
 def callback(data):
-    global v_meas
-    vL=(data.FL/8)*pi*0.05
-    vR=(data.FR/8)*pi*0.05
-    v_meas=(vL+vR)/2
+    global v_meas, FRk1, FLk1, FRk2, FLk2
+    # vL = (data.FL - 4*FLk1 + 3*FLk2)/(2*0.05)
+    # vR = (data.FR - 4*FRk1 + 3*FRk2)/(2*0.05)
+    # FLk2, FRk2 = FLk1, FRk1
+    # FLk1, FRk1 = data.FL, data.FR
+    # v_meas=(vL+vR)/2*r_tire*2*pi / 8
+    # vL = data.FL - FLk1
+    # vR = data.FR - FRk1
+    # v_meas = (vL+vR)/(2 * 0.05) * 2 * pi / 8 * 0.05
+    v_meas = (data.FL + data.FR) / 2
 
 # state estimation node
 def controller():
@@ -70,14 +80,14 @@ def controller():
 
     #Add your necessary topic subscriptions / publications, depending on your preferred method of velocity estimation
     ecu_pub   = rospy.Publisher('ecu_pwm', ECU, queue_size = 10)
-    encoder   = rospy.Subscriber('encoder', Encoder, callback )
-
+    encoder   = rospy.Subscriber('encoder', Encoder, callback)
+    velocity  = rospy.Subscriber('vel_est', Encoder, callback)
     # Set node rate
     loop_rate   = 50
     rate        = rospy.Rate(loop_rate)
     
     # Initialize your PID controller here, with your chosen PI gains
-    PID_control = PID(kp = 7.48, ki =5.03, kd = 0)
+    PID_control = PID(kp=50, ki=50, kd = 0)
     
     while not rospy.is_shutdown():
         # calculate acceleration from PID controller.
