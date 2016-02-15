@@ -87,7 +87,7 @@ def controller():
     rate        = rospy.Rate(loop_rate)
 
     # Initialize your PID controller here, with your chosen PI gains
-    PID_control = PID(kp = 75, ki =5, kd = 0) # Calculated #s:P748, I503
+    PID_control = PID(kp = 75, ki =5.5, kd = 0) # Calculated #s:P748, I503
 
 
     while not rospy.is_shutdown():
