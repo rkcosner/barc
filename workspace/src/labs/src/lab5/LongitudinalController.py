@@ -15,10 +15,10 @@ motor_pwm_offset = 1500.0
 
 # reference speed
 v_ref       = 0.5
-thetaL1     = v_ref
-thetaL2     = v_ref
-thetaR1     = v_ref
-thetaR2     = v_ref
+thetaL1     = 0.0
+thetaL2     = 0.0
+thetaR1     = 0.0
+thetaR2     = 0.0
 
 # ===================================PID longitudinal controller================================#
 class PID():
@@ -52,18 +52,18 @@ class PID():
         self.derivator = self.error
 
         acc = self.P_effect + self.I_effect + self.D_effect
-        if acc <= 0:
-            acc = 20
+        # if acc <= 0:
+        #     acc = 20
         return acc
 
 # =====================================end of the controller====================================#
 
 def callback(data):
     global v_meas, thetaL1, thetaL2, thetaR1, thetaR2
-    bandw = 0.200 # sec, system frequency = 200 Hz
+    bandw = 0.200 # sec, system frequency = 5 Hz
     vL=(3*data.FL - 4*thetaL1 + thetaL2)/(2*bandw)  # Provides us with the approximated angular velocity L
     vR=(3*data.FR - 4*thetaR1 + thetaR2)/(2*bandw)  # Provides us with the approximated angular velocity R
-    v_meas=((vL+vR)/2)*(2*pi/8)*r_tire  # Calculate the linear velocity: (EncoderConts/Sec)*(Radians/Encoder)*Radius
+    v_meas=((vL+vR)/2)*(2*pi/8)*r_tire  # Calculate the linear velocity: (EncoderCounts/Sec)*(Radians/Encoder)*Radius
     # Move forward one time step
     thetaL2=thetaL1
     thetaL1=data.FL
@@ -83,7 +83,7 @@ def controller():
     encoder   = rospy.Subscriber('encoder', Encoder, callback )
 
     # Set node rate
-    loop_rate   = 200
+    loop_rate   = 5
     rate        = rospy.Rate(loop_rate)
 
     # Initialize your PID controller here, with your chosen PI gains
