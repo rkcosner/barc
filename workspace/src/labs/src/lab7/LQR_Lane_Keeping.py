@@ -352,13 +352,13 @@ class image_processing_node():
 
     def calc_x_newPixel_to_y_Inertial(self,x_newPixel,y_newPixel):
         # Transforms the xnewpixel into yinertial frame
-        y_Inertial = #FILL IN HERE
+        y_Inertial = 
         y_Inertial=y_Inertial*0.3048 #convert ft to m
         return y_Inertial
 
     def calc_y_newPixel_to_x_Inertial(self,y_newPixel):
         # Transforms the ynewpixel into xinertial frame
-        x_Inertial = #FILL IN HERE
+        x_Inertial = 8.917E-9*y_newPixel**4 + -7.8875E-7*y_newPixel**3 + -0.0001258*y_newPixel**2 + 0.028327*y_newPixel 
         x_Inertial=x_Inertial*0.3048 #convert ft to m
         return x_Inertial
     #########################################################################
