@@ -34,7 +34,7 @@ def loopfn():
 		elif key == 's':
 			acc = -1
 		elif key == 'd':
-			d = 1
+			d_f = 1
 
 
 		# publish information
