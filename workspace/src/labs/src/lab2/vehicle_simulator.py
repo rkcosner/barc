@@ -70,6 +70,7 @@ def vehicle_simulator():
     while not rospy.is_shutdown():
         theta = interp(x, x_list, theta_list)/180*pi
         (x, y, psi, v_x) = bikeFE(x, y, psi, v_x, acc, d_f, a0, m, Ff, theta, ts)
+        print(x, y, psi, v_x)
         v_y = 0
         r = 0
         # publish information

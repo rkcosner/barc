@@ -28,10 +28,15 @@ class PID():
 		self.kp = kp
 		self.ki = ki
 		self.kd = kd
+		self.q = 0  # integrator variable
+		self.lastdv = 0
 	
 	def acc_calculate(self, speed_reference, speed_current):
-			 
-	 	acc = TODO
+			
+		dv = speed_reference - speed_current
+		self.q += dv
+		dvdot, self.lastdv = dv - self.lastdv, dv
+	 	acc = self.kp * dv + self.ki * self.q + self.kd * dvdot
 
 	 	return acc
 	
