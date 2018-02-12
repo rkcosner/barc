@@ -24,6 +24,8 @@ def loopfn():
 		if (key == '\x03'):
 			break
 
+		acc = 0
+		d_f = 0
 		# calculate ECU commands
 		if key == 'w':
 			acc = 1
