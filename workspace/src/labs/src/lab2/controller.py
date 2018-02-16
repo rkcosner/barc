@@ -24,7 +24,7 @@ def measurements_callback(data):
 # Insert your PID longitudinal controller here: since you are asked to do longitudinal control,  the steering angle d_f can always be set to zero. Therefore, the control output of your controller is essentially longitudinal acceleration acc.
 # ==========PID longitudinal controller=========#
 class PID():
-	def __init__(self, kp=8, ki=.6, kd=.5):
+	def __init__(self, kp=0.5, ki=0.5, kd=0.5):
 		self.kp = kp
 		self.ki = ki
 		self.kd = kd
@@ -65,7 +65,7 @@ def controller():
 	v_ref = 8 # reference speed is 8 m/s
 	
 	# Initialize the PID controller with your tuned gains
-	PID_control = PID(kp=0.5, ki=0.5, kd=0.5)
+	PID_control = PID(kp=8, ki=.6, kd=.5)
 	
 	while not rospy.is_shutdown():
 		# acceleration calculated from PID controller.
