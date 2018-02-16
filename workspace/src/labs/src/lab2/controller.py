@@ -24,7 +24,7 @@ def measurements_callback(data):
 # Insert your PID longitudinal controller here: since you are asked to do longitudinal control,  the steering angle d_f can always be set to zero. Therefore, the control output of your controller is essentially longitudinal acceleration acc.
 # ==========PID longitudinal controller=========#
 class PID():
-	def __init__(self, kp=1, ki=1, kd=1):
+	def __init__(self, kp=8, ki=.6, kd=.5):
 		self.kp = kp
 		self.ki = ki
 		self.kd = kd
