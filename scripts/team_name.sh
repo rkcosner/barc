@@ -1,1 +1,1 @@
-export TEAM_NAME="MPC_BARC_2"
+export TEAM_NAME="barc-traxxas-17"
