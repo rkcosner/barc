@@ -12,8 +12,11 @@ r_tire      = 0.05 # radius of the tire
 servo_pwm   = 1523.0
 motor_pwm   = 1500.0
 motor_pwm_offset = 1500.0
-
-# reference speed 
+thetaL1     = 0
+thetaL2     = 0
+thetaR1     = 0
+thetaR2     = 0
+# reference speed
 v_ref = 0.1 # give reference speed is 0.5 m/s
 
 # ===================================PID longitudinal controller================================#
@@ -29,10 +32,10 @@ class PID():
 
     def acc_calculate(self, speed_reference, speed_current):
         self.error = speed_reference - speed_current
-        
+
         # Propotional control
         self.P_effect = self.kp*self.error
-        
+
         # Integral control
         self.integrator = self.integrator + self.error
         ## Anti windup
@@ -41,7 +44,7 @@ class PID():
         if self.integrator <= self.integrator_min:
             self.integrator = self.integrator_min
         self.I_effect = self.ki*self.integrator
-        
+
         # Derivative control
         self.derivator = self.error - self.derivator
         self.D_effect = self.kd*self.derivator
@@ -55,16 +58,22 @@ class PID():
 # =====================================end of the controller====================================#
 
 def callback(data):
-    global v_meas
-    vL=(data.FL/8)*pi*0.05
-    vR=(data.FR/8)*pi*0.05
-    v_meas=(vL+vR)/2
+    global v_meas, thetaL1, thetaL2, thetaR1, thetaR2
+    bandw = 0.05 # sec, system frequency = 200 Hz
+    vL=(3*data.FL - 4*thetaL1 + thetaL2)/(2*bandw)  # Provides us with the approximated angular velocity L
+    vR=(3*data.FR - 4*thetaR1 + thetaR2)/(2*band2)  # Provides us with the approximated angular velocity R
+    v_meas=((VL+VR)/2)*(2*pi/8)*0.05  # Calculate the linear velocity: (EncoderConts/Sec)*(Radians/Encoder)*Radius
+    # Move forward one time step
+    thetaL2=thetaL1
+    thetaL1=data.FL
+    thetaR2=thetaR1
+    thetaR1=data.FR
 
 # state estimation node
 def controller():
     global motor_pwm, servo_pwm, motor_pwm_offset
     global v_ref
-    
+
     # Initialize node:
     rospy.init_node('simulationGain', anonymous=True)
 
@@ -75,14 +84,14 @@ def controller():
     # Set node rate
     loop_rate   = 50
     rate        = rospy.Rate(loop_rate)
-    
+
     # Initialize your PID controller here, with your chosen PI gains
     PID_control = PID(kp = 7.48, ki =5.03, kd = 0)
-    
+
     while not rospy.is_shutdown():
         # calculate acceleration from PID controller.
         motor_pwm = PID_control.acc_calculate(v_ref, v_meas) + motor_pwm_offset
- 
+
         # publish control command
         ecu_pub.publish( ECU(motor_pwm, servo_pwm) )
 
