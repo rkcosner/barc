@@ -331,7 +331,8 @@ class image_processing_node():
         self.reference_trajectory_pub.publish(self.reference_trajectory)
         ####################################################################
         # Uncomment this next line when you are ready to use LQR
-        #self.compute_uOpt(self.reference_trajectory.x,self.reference_trajectory.y,self.v_ref)
+        print('computing uOpt')
+        self.compute_uOpt(self.reference_trajectory.x,self.reference_trajectory.y,self.v_ref)
         ####################################################################
      ######################################################################################
     def convertPixelsToDistance(self,inputarray):
@@ -352,7 +353,7 @@ class image_processing_node():
 
     def calc_x_newPixel_to_y_Inertial(self,x_newPixel,y_newPixel):
         # Transforms the xnewpixel into yinertial frame
-        x_Inertial = calc_y_newPixel_to_x_Inertial(y_newPixel)
+        x_Inertial = self.calc_y_newPixel_to_x_Inertial(y_newPixel)
         slope = -0.00247475*x_Inertial - 0.00059333
         y_Inertial = slope * x_newPixel
         y_Inertial=y_Inertial*0.3048 #convert ft to m
@@ -365,7 +366,9 @@ class image_processing_node():
         return x_Inertial
     #########################################################################
     def compute_uOpt(self,x_ref,y_ref,v_ref):
+        print('inside function')
         try:
+            print('passed try statement')
             if not(self.stopmoving):
                 dt = self.dt
                 lr = 0.15
@@ -424,6 +427,7 @@ class image_processing_node():
                 K, X, closedLoopEigVals = controlpy.synthesis.controller_lqr(Ac, Bc, Q, R)
 
                 u_Opt = -K*(z - z_ref) + u_bar# TO DO
+                print(u_Opt)
                 vOpt = u_Opt[0,0]
                 betaOpt = u_Opt[1,0]
                 deltaOpt = atan2(((lf+lr)*tan(u_Opt[1,0])),lr)
