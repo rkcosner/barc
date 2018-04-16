@@ -26,7 +26,7 @@ import rospy
 import time
 
 motor_pwm = 1500
-servo_pwm = 1580
+servo_pwm = 1522 #changed for our vehicle 3/6/2018
 
 def arduino_interface():
     global ecu_pub, motor_pwm, servo_pwm
@@ -44,7 +44,7 @@ def arduino_interface():
         if time.time() >= time_prev and time.time() < time_prev + 7: 
             motor_pwm = 1620
         if time.time() >= time_prev + 5 and time.time() < time_prev + 12: 
-            motor_pwm = 1440 #1465
+            motor_pwm = 1465
         #if time.time() >= time_prev + 5 and time.time() < time_prev + 10: 
          #   motor_pwm = 84.0
         #if time.time() >= time_prev + 12 and time.time() < time_prev + 17: 
