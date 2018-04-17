@@ -418,12 +418,12 @@ class image_processing_node():
                 Bc = np.matrix([[cos(z_ref[2]+u_bar[1]), -u_bar[0]*sin(z_ref[2]+u_bar[1])], [sin(z_ref[2]+u_bar[1]), u_bar[0]*cos(z_ref[2]+u_bar[1])], [(1/lr)*sin(u_bar[1]), (u_bar[0]/lr)*cos(u_bar[1])]])
 
                 Q = 100*np.eye(3)  # TO DO
-                R = 1*np.eye(2)   # TO DO
+                R = 1*np.eye(2)    # TO DO
 
                 # Compute the LQR controller
                 K, X, closedLoopEigVals = controlpy.synthesis.controller_lqr(Ac, Bc, Q, R)
 
-                u_Opt = # TO DO
+                u_Opt = -K*(z - z_ref) + u_bar# TO DO
                 vOpt = u_Opt[0,0]
                 betaOpt = u_Opt[1,0]
                 deltaOpt = atan2(((lf+lr)*tan(u_Opt[1,0])),lr)
