@@ -421,11 +421,11 @@ class image_processing_node():
                 R = 1*np.eye(2)    # TO DO
 
                 # Compute the LQR controller
-                K, X, closedLoopEigVals = controlpy.synthesis.controller_lqr(Ac, Bc, Q, R)
+                K, X, closedLoopEigVals = controlpy.synthesis.controller_lqr_discrete_time(Ac, Bc, Q, R)
 
                 u_Opt = -K*(z - z_ref) + u_bar# TO DO
-                print(z - z_ref)
-                print(u_Opt)
+                # print(z - z_ref)
+                # print(u_Opt)
                 vOpt = u_Opt[0,0]
                 betaOpt = u_Opt[1,0]
                 deltaOpt = atan2(((lf+lr)*tan(u_Opt[1,0])),lr)

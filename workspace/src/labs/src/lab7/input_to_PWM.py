@@ -6,7 +6,9 @@
 import rospy
 import time
 from geometry_msgs.msg import Twist
-from barc.msg import ECU, Input, Moving, encoder
+from barc.msg import ECU, Input, Moving, Encoder
+from numpy import pi
+
 v_meas      = 0.0
 t0          = time.time()
 r_tire      = 0.05 # radius of the tire
@@ -15,6 +17,7 @@ motor_pwm   = 1500.0
 motor_pwm_offset = 1500.0
 
 # reference speed
+v_ref = 0.0
 thetaL1     = 0
 thetaL2     = 0
 thetaR1     = 0
@@ -93,7 +96,7 @@ def callback_function(data):
     ################################################################################################################################################
     # Convert the velocity into motorPWM and steering angle into servoPWM
     a_servo, b_servo = -0.0006100255, 0.96345
-    newECU.servo = (data.deltaOpt - b_servo) / a_servo
+    newECU.servo = (data.delta - b_servo) / a_servo
     #################################################################################################################################################
 
     servomax = 1800
