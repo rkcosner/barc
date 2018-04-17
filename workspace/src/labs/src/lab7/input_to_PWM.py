@@ -77,7 +77,7 @@ def inputToPWM():
     # initialize node
     rospy.init_node('inputToPWM', anonymous=True)
 
-    global pubname , newECU , subname, move , still_moving
+    global pubname , newECU , subname, move , still_moving, v_meas
     newECU = ECU()
     newECU.motor = 1500
     newECU.servo = 1550
