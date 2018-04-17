@@ -80,7 +80,7 @@ def moving_callback_function(data):
 def encoder_callback_function(data):
     global v_meas, thetaL1, thetaL2, thetaR1, thetaR2
     # determine the measured velocity from the encoder data
-    bandw = 0.100 # sec, system frequency = 10 Hz
+    bandw = 0.100 # sec, system frequency = 5 Hz
     vL=(3*data.FL - 4*thetaL1 + thetaL2)/(2*bandw)  # Provides us with the approximated angular velocity L
     vR=(3*data.FR - 4*thetaR1 + thetaR2)/(2*bandw)  # Provides us with the approximated angular velocity R
     v_meas=((vL+vR)/2)*(2*pi/8)*r_tire  # Calculate the linear velocity: (EncoderConts/Sec)*(Radians/Encoder)*Radius
@@ -92,11 +92,15 @@ def encoder_callback_function(data):
 
 # update
 def callback_function(data):
-    global move, still_moving, v_meas, newECU
+    global move, still_moving, v_meas, newECU, pubname
     ################################################################################################################################################
     # Convert the velocity into motorPWM and steering angle into servoPWM
     a_servo, b_servo = -0.0006100255, 0.96345
+    # a_servo = -0.0011
+    # b_servo = 1.4
     newECU.servo = (data.delta - b_servo) / a_servo
+    rospy.logwarn('servo_pwm = {}'.format(newECU.servo))
+    # newECU.servo = (newECU.servo - 1512) / 2 + 1512
     #################################################################################################################################################
 
     servomax = 1800
@@ -105,6 +109,8 @@ def callback_function(data):
         newECU.servo = servomin
     elif (newECU.servo>servomax):
         newECU.servo = servomax     # input steering angle
+
+    pubname.publish(newECU)
 
 def inputToPWM():
 
@@ -132,17 +138,20 @@ def inputToPWM():
     rospy.Subscriber('encoder', Encoder, encoder_callback_function)
 
     # set node rate
-    loop_rate   = 10
+    loop_rate   = 5 
     ts          = 1.0 / loop_rate
     rate        = rospy.Rate(loop_rate)
     t0          = time.time()
 
-    PID_control = PID(kp=75, ki=5.5, kd=0)
-
+    PID_control = PID(kp=1, ki=1, kd=0)
+    print('outside rospy loop')
     while not rospy.is_shutdown():
         # calculate acceleration from PID controller
-        motor_pwm = PID_control.acc_calculate(v_ref, v_meas) + motor_pwm_offset
-        newECU.motor = motor_pwm
+        print('inside rospy loop')
+        print(v_ref, v_meas)
+        # motor_pwm = PID_control.acc_calculate(v_ref, v_meas) + motor_pwm_offset
+        # newECU.motor = motor_pwm
+        newECU.motor = 1570
 
         # safety check
         if (newECU.motor<minspeed):

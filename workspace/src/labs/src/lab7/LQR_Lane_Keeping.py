@@ -418,7 +418,7 @@ class image_processing_node():
                 Bc = np.matrix([[cos(z_ref[2,0]+u_bar[1,0]), -u_bar[0,0]*sin(z_ref[2,0]+u_bar[1,0])], [sin(z_ref[2,0]+u_bar[1,0]), u_bar[0,0]*cos(z_ref[2,0]+u_bar[1,0])], [(1/lr)*sin(u_bar[1,0]), (u_bar[0,0]/lr)*cos(u_bar[1,0])]])
 
                 Q = 100*np.eye(3)  # TO DO
-                R = 1*np.eye(2)    # TO DO
+                R = np.array([[1, 0], [0, 500]])    # TO DO
 
                 # Compute the LQR controller
                 K, X, closedLoopEigVals = controlpy.synthesis.controller_lqr_discrete_time(Ac, Bc, Q, R)
