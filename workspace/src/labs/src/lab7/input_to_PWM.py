@@ -47,8 +47,13 @@ def callback_function(data):
     a_motor, b_motor = -0.6055, 0.0129
     a_servo, b_servo = -0.0006100255, 0.96345
     # newECU.motor =  (data.vOpt - a_motor*current_vel) / b_motor
+<<<<<<< HEAD
     newECU.motor =  (data.vOpt - a_motor * v_meas) / b_motor
     newECU.servo = (data.deltaOpt - b_servo) / a_servo
+=======
+    newECU.motor =  (data.vel - a_motor * 0.5) / b_motor
+    newECU.servo = (data.delta - b_servo) / a_servo
+>>>>>>> 70dd11391946dd63ba804b9742dda8319e83a981
     #################################################################################################################################################
 
     maxspeed = 1575
