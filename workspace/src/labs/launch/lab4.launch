@@ -20,17 +20,14 @@
         <param name="width" value="640"/>
         <param name="height" value="480"/>
     </node>
-    
+
     <!-- RECORD -->
     <node pkg="barc" type="record_experiment.py" name="record_experiment" output="screen">
         <param name="experiment_name" value="$(arg id)" />
         <param name="camera_on" value="true" />
     </node>
 
-<<<<<<< HEAD
-    <node pkg="labs" type="CoastDown.py" name="model_id" />
-=======
+
     <node pkg="labs" type="SpeedModelID.py" name="model_id" />
->>>>>>> 913163a1acddc1d846eb269c04ae3dc60ecbc2bd
  
 </launch>
