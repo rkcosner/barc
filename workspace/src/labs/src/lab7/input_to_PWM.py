@@ -46,7 +46,12 @@ def encoder_callback_function(data):
     vL=(3*data.FL - 4*thetaL1 + thetaL2)/(2*bandw)  # Provides us with the approximated angular velocity L
     vR=(3*data.FR - 4*thetaR1 + thetaR2)/(2*bandw)  # Provides us with the approximated angular velocity R
     v_meas=((vL+vR)/2)*(2*pi/8)*r_tire  # Calculate the linear velocity: (EncoderConts/Sec)*(Radians/Encoder)*Radius
-
+    # Move forward one time step
+    thetaL2=thetaL1
+    thetaL1=data.FL
+    thetaR2=thetaR1
+    thetaR1=data.FR
+    
 # update
 def callback_function(data):
     global move, still_moving, v_meas
