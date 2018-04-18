@@ -33,16 +33,14 @@ def moving_callback_function(data):
 # update
 def callback_function(data):
     global move, still_moving
-    ################################################################################################################################################
+    #######################################################################
     # Convert the velocity into motorPWM and steering angle into servoPWM
     a_motor, b_motor = -0.6055, 0.0129
     a_servo, b_servo = -0.0006100255, 0.96345
     # newECU.motor =  (data.vOpt - a_motor*current_vel) / b_motor
     newECU.motor =  (data.vOpt - a_motor * 0.5) / b_motor
     newECU.servo = (data.deltaOpt - b_servo) / a_servo 
-
-    # ASK BORRELLI where current_vel comes from
-    #################################################################################################################################################
+    #######################################################################
 
     maxspeed = 1575
     minspeed = 1400
@@ -70,7 +68,7 @@ def inputToPWM():
     # initialize node
     rospy.init_node('inputToPWM', anonymous=True)
     
-    global pubname , newECU , subname, move , still_moving
+    global pubname, newECU, subname, move, still_moving
     newECU = ECU() 
     newECU.motor = 1500
     newECU.servo = 1550
