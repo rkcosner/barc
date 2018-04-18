@@ -7,7 +7,15 @@ import rospy
 import time
 from geometry_msgs.msg import Twist
 from barc.msg import ECU, Input, Moving, encoder
-
+v_meas      = 0.0
+t0          = time.time()
+r_tire      = 0.05 # radius of the tire
+servo_pwm   = 1523.0
+motor_pwm   = 1500.0
+motor_pwm_offset = 1500.0
+thetaL1     = 0thetaL2     = 0
+thetaR1     = 0
+thetaR2     = 0
 
 
 def start_callback(data):
@@ -32,7 +40,7 @@ def moving_callback_function(data):
 
 
 def encoder_callback_function(data):
-    global v_meas
+    global v_meas, thetaL1, thetaL2, thetaR1, thetaR2
     # determine the measured velocity from the encoder data
     bandw = 0.200 # sec, system frequency = 200 Hz
     vL=(3*data.FL - 4*thetaL1 + thetaL2)/(2*bandw)  # Provides us with the approximated angular velocity L
