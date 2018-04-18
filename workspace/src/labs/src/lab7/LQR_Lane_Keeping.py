@@ -331,7 +331,7 @@ class image_processing_node():
         self.reference_trajectory_pub.publish(self.reference_trajectory)
         ####################################################################
         # Uncomment this next line when you are ready to use LQR
-        #self.compute_uOpt(self.reference_trajectory.x,self.reference_trajectory.y,self.v_ref)
+        self.compute_uOpt(self.reference_trajectory.x,self.reference_trajectory.y,self.v_ref)
         ####################################################################
      ######################################################################################
     def convertPixelsToDistance(self,inputarray):
@@ -352,7 +352,7 @@ class image_processing_node():
 
     def calc_x_newPixel_to_y_Inertial(self,x_newPixel,y_newPixel):
         # Transforms the xnewpixel into yinertial frame
-        x_Inertial = calc_y_newPixel_to_x_Inertial(y_newPixel)
+        x_Inertial = self.calc_y_newPixel_to_x_Inertial(y_newPixel)
         slope = -0.00247475*x_Inertial - 0.00059333
         y_Inertial = slope * x_newPixel
         y_Inertial=y_Inertial*0.3048 #convert ft to m
@@ -409,13 +409,13 @@ class image_processing_node():
                 print('psi_des',psi_des*180/pi)
                 """
 
-                z = np.matrix([[0],[0],[0]])
-                z_ref = [[x_ref[0]],[y_ref[0]],[psi_des]];
-                u_bar = [[v_ref],[beta_des]];
+                z = np.array([[0],[0],[0]])
+                z_ref = np.array([[x_ref[0]],[y_ref[0]],[psi_des]])
+                u_bar = np.array([[v_ref],[beta_des]])
 
 
-                Ac = np.matrix([[0, 0, -u_bar[0]*sin(z_ref[2]+u_bar[1])], [0, 0, u_bar[0]*cos(z_ref[2]+u_bar[1])], [0, 0, 0]])
-                Bc = np.matrix([[cos(z_ref[2]+u_bar[1]), -u_bar[0]*sin(z_ref[2]+u_bar[1])], [sin(z_ref[2]+u_bar[1]), u_bar[0]*cos(z_ref[2]+u_bar[1])], [(1/lr)*sin(u_bar[1]), (u_bar[0]/lr)*cos(u_bar[1])]])
+                Ac = np.matrix([[0, 0, -u_bar[0,0]*sin(z_ref[2,0]+u_bar[1,0])], [0, 0, u_bar[0,0]*cos(z_ref[2,0]+u_bar[1,0])], [0, 0, 0]])
+                Bc = np.matrix([[cos(z_ref[2,0]+u_bar[1,0]), -u_bar[0,0]*sin(z_ref[2,0]+u_bar[1,0])], [sin(z_ref[2,0]+u_bar[1,0]), u_bar[0,0]*cos(z_ref[2,0]+u_bar[1,0])], [(1/lr)*sin(u_bar[1,0]), (u_bar[0,0]/lr)*cos(u_bar[1,0])]])
 
                 Q = 100*np.eye(3)  # TO DO
                 R = 1*np.eye(2)    # TO DO
@@ -424,6 +424,8 @@ class image_processing_node():
                 K, X, closedLoopEigVals = controlpy.synthesis.controller_lqr(Ac, Bc, Q, R)
 
                 u_Opt = -K*(z - z_ref) + u_bar# TO DO
+                print(z - z_ref)
+                print(u_Opt)
                 vOpt = u_Opt[0,0]
                 betaOpt = u_Opt[1,0]
                 deltaOpt = atan2(((lf+lr)*tan(u_Opt[1,0])),lr)
