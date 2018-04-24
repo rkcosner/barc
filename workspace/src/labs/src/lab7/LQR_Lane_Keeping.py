@@ -417,6 +417,7 @@ class image_processing_node():
                 Ac = np.matrix([[0, 0, -u_bar[0,0]*sin(z_ref[2,0]+u_bar[1,0])], [0, 0, u_bar[0,0]*cos(z_ref[2,0]+u_bar[1,0])], [0, 0, 0]])
                 Bc = np.matrix([[cos(z_ref[2,0]+u_bar[1,0]), -u_bar[0,0]*sin(z_ref[2,0]+u_bar[1,0])], [sin(z_ref[2,0]+u_bar[1,0]), u_bar[0,0]*cos(z_ref[2,0]+u_bar[1,0])], [(1/lr)*sin(u_bar[1,0]), (u_bar[0,0]/lr)*cos(u_bar[1,0])]])
 
+                # Large weights on x, y (first two diags of Q), small weights on R.
                 Q = 100*np.eye(3)  # TO DO
                 R = np.array([[1, 0], [0, 500]])    # TO DO
 
