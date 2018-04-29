@@ -13,6 +13,38 @@ servo_pwm   = 1512.0
 motor_pwm   = 1500.0
 motor_pwm_offset = 1500.0
 
+# reference speed 
+v_ref = 0.5 # reference speed is 0.5 m/s
+
+# encoder measurement update
+def enc_callback(data):
+    global t0, v_meas
+    global n_FL, n_FR, n_BL, n_BR
+    global ang_km1, ang_km2
+
+    n_FL = data.FL
+    n_FR = data.FR
+    n_BL = data.BL
+    n_BR = data.BR
+
+    # compute the average encoder measurement
+    n_mean = (n_FL + n_FR)/2
+
+    # transfer the encoder measurement to angular displacement
+    ang_mean = n_mean*2*pi/8
+
+    # compute time elapsed
+    tf = time.time()
+    dt = tf - t0
+    
+    # compute speed with second-order, backwards-finite-difference estimate
+    v_meas    = r_tire*(ang_mean - 4*ang_km1 + 3*ang_km2)/(dt)
+    rospy.logwarn("velocity = {}".format(v_meas))
+    # update old data
+    ang_km1 = ang_mean
+    ang_km2 = ang_km1
+    t0      = time.time()
+
 # reference speed
 v_ref       = 0.5
 thetaL1     = 0.0
@@ -25,7 +57,6 @@ class PID():
     def __init__(self, kp=1, ki=1, kd=1, integrator=0, derivator=0):
         self.kp = kp
         self.ki = ki
-        self.kd = kd
         self.integrator = integrator
         self.derivator = derivator
         self.integrator_max = 30
@@ -39,21 +70,23 @@ class PID():
 
         # Integral control
         self.integrator = self.integrator + self.error
-        ## Anti windup
+        
+		# Anti windup
         if self.integrator >= self.integrator_max:
-            self.integrator = self.integrator_max
-        if self.integrator <= self.integrator_min:
-            self.integrator = self.integrator_min
+           self.integrator = self.integrator_max
+
         self.I_effect = self.ki*self.integrator
 
-        # Derivative control
-        self.derivator = self.error - self.derivator
-        self.D_effect = self.kd*self.derivator
-        self.derivator = self.error
+        acc = self.P_effect + self.I_effect
 
-        acc = self.P_effect + self.I_effect + self.D_effect
-        # if acc <= 0:
-        #     acc = 20
+        # # Derivative control
+        # self.derivator = self.error - self.derivator
+        # self.D_effect = self.kd*self.derivator
+        # self.derivator = self.error
+
+        # acc = self.P_effect + self.I_effect + self.D_effect
+        # # if acc <= 0:
+        # #     acc = 20
         return acc
 
 # =====================================end of the controller====================================#
@@ -78,7 +111,9 @@ def controller():
     # Initialize node:
     rospy.init_node('simulationGain', anonymous=True)
 
-    #Add your necessary topic subscriptions / publications, depending on your preferred method of velocity estimation
+
+    # topic subscriptions / publications
+    rospy.Subscriber('encoder', Encoder, enc_callback)
     ecu_pub   = rospy.Publisher('ecu_pwm', ECU, queue_size = 10)
     encoder   = rospy.Subscriber('encoder', Encoder, callback )
 
@@ -86,9 +121,8 @@ def controller():
     loop_rate   = 5
     rate        = rospy.Rate(loop_rate)
 
-    # Initialize your PID controller here, with your chosen PI gains
+    # Initialize the PID controller
     PID_control = PID(kp = 75, ki =5.5, kd = 0) # Calculated #s:P748, I503
-
 
     while not rospy.is_shutdown():
         # calculate acceleration from PID controller.
