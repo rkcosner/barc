@@ -19,13 +19,13 @@
 
         <!-- PID Control for CL segment -->
         <!-- Motor PID -->
-        <param name="Pm" type="double" value="1" />
-        <param name="Im" type="double" value="1" />
+        <param name="Pm" type="double" value="3" />
+        <param name="Im" type="double" value="30" />
         <param name="Dm" type="double" value="0" />
 
         <!-- Servo PID -->
-        <param name="Ps" type="double" value="1" />
-        <param name="Is" type="double" value="1" />
+        <param name="Ps" type="double" value="5" />
+        <param name="Is" type="double" value="5" />
         <param name="Ds" type="double" value="0" />
     </node>
 

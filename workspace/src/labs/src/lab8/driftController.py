@@ -42,19 +42,21 @@ def main():
 
     # sample input parameters for drift
     s               = 3.0
+    a               = 1850
+    b               = 1900
     Dt              = uniform(0,0.8)
-    #F1              = int( uniform( a, b ) )
-    #df              = int( uniform( a, b ) )
+    F1              = int( uniform( a, b ) )
+    df              = int( uniform( a, b ) )
     F2              = 990   # brake
 
     u_motor_neutral = 1500
-    u_servo_neutral = 1500
+    u_servo_neutral = 1510
     u_motor         = u_motor_neutral
     u_servo         = u_servo_neutral
 
     rospy.logwarn("Dt = {}".format(Dt))
-    #rospy.logwarn("F1 (acceleration) = {}".format(F1))
-    #rospy.logwarn("df (steering) = {}".format(df))
+    rospy.logwarn("F1 (acceleration) = {}".format(F1))
+    rospy.logwarn("df (steering) = {}".format(df))
 
     now         = rospy.get_rostime()
     t0          = now.secs + now.nsecs/(10.0**9)
@@ -84,27 +86,27 @@ def main():
             u_servo = u_ff + int(u_fb)
 
             t_straight  = t
-        else:
-            u_motor = u_motor_neutral
-            u_servo = u_servo_neutral
+        # else:
+        #     u_motor = u_motor_neutral
+        #     u_servo = u_servo_neutral
 
         # perform aggresive turn and accelerate
-        """
-        elif t < t_straight + ???:
+        # """
+        elif t < t_straight + Dt:
             if not turn:
                 rospy.logwarn("Turning and accelerating ...")
                 turn = True
-            u_motor = ??? 
-            u_servo = ???
+            u_motor = F1
+            u_servo = df
 
         # apply brake
         else:
             if not brake:   
                 rospy.logwarn("Braking ! ...")
                 brake = True
-            u_motor = ???
-            u_servo = ???
-        """
+            u_motor = F2
+            u_servo = u_servo_neutral
+        # """
 
         # publish control command
         #rospy.logwarn("v1 = {}".format(enc.vhat_m1))
