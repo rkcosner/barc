@@ -58,7 +58,7 @@ def encoder_callback_function(data):
 
 # update
 def callback_function(data):
-    global move, still_moving, v_meas, newECU, pubname
+    global move, still_moving, v_meas, newECU, pubname, v_ref
     ################################################################################################################################################
     # Convert the velocity into motorPWM and steering angle into servoPWM
     a_servo, b_servo = -0.0006100255, 0.96345
@@ -67,6 +67,8 @@ def callback_function(data):
     newECU.servo = (data.delta - b_servo) / a_servo
     rospy.logwarn('servo_pwm = {}'.format(newECU.servo))
     # newECU.servo = (newECU.servo - 1512) / 2 + 1512
+
+    v_ref = data.vel
     #################################################################################################################################################
 
     servomax = 1800
@@ -127,9 +129,6 @@ def inputToPWM():
     move = False
     still_moving = False
 
-    maxspeed = 1575
-    minspeed = 1400
-
     #print("1")
     #print(move)
 
@@ -141,18 +140,21 @@ def inputToPWM():
     rospy.Subscriber('encoder', Encoder, encoder_callback_function)
 
     # set node rate
-    loop_rate   = 5  # TODO(nish): raise sample rate
+    loop_rate   = 20  # TODO(nish): raise sample rate
     ts          = 1.0 / loop_rate
     rate        = rospy.Rate(loop_rate)
     t0          = time.time()
 
-    PID_control = PID(kp=1, ki=1, kd=0)
+    PID_control = PID(kp=70, ki=5, kd=0)
+    maxspeed = 1650
+    minspeed = 1400
+
     while not rospy.is_shutdown():
         # calculate acceleration from PID controller
         rospy.logwarn('v_ref = {}, v_meas = {}'.format(v_ref, v_meas))
-        # motor_pwm = PID_control.acc_calculate(v_ref, v_meas) + motor_pwm_offset
-        # newECU.motor = motor_pwm
-        newECU.motor = 1570
+        motor_pwm = PID_control.acc_calculate(v_ref, v_meas) + motor_pwm_offset
+        newECU.motor = motor_pwm
+        # newECU.motor = 1570
 
         # safety check
         if (newECU.motor<minspeed):
