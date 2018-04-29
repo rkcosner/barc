@@ -20,7 +20,7 @@
         <param name="width" value="640"/>
         <param name="height" value="480"/>
     </node>
-
+    
     <!-- RECORD -->
     <node pkg="barc" type="record_experiment.py" name="record_experiment" output="screen">
         <param name="experiment_name" value="$(arg id)" />
