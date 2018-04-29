@@ -1,0 +1,758 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Pixel_To_Distance_Conversion_Sol</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-04-29"><meta name="DC.source" content="Pixel_To_Distance_Conversion_Sol.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Author: Tony Zheng</a></li><li><a href="#2">Mapping a forward distance (with no lateral movement) to a number of y_newPixels</a></li><li><a href="#3">Flipped axis to get the equation in reverse</a></li><li><a href="#4">Plotting the objects at varying y_Inertial for different x_Inertial</a></li><li><a href="#5">Changing the previous plot to have the given y_Inertial rather than x_newPixel for the x axis</a></li><li><a href="#6">Offset each set of measurements at different x_Inertials so that the y_newPixel starts at 0 rather than the given y_newPixel (subtract each row by the first value)</a></li><li><a href="#7">Find a polynomial fit for all those data points</a></li><li><a href="#8">Plot the varying lateral distance y_Inertial vs. x_newPixel</a></li><li><a href="#9">Calculate the slope of the line for each x_Inertial</a></li><li><a href="#10">Taking a polyfit of each slope vs x_inertial</a></li><li><a href="#11">Taking a polyfit of each offset vs x_inertial</a></li><li><a href="#12">Example of an arbitrary x_inertial to see if it lines up with my expectations</a></li><li><a href="#13">Plotting the given x_inertials with my slope equation</a></li><li><a href="#14">Plot slope vs x_inertial</a></li><li><a href="#15">Plot offset B vs x_inertial</a></li><li><a href="#16">Plotting the original points (Given x_inertial and y_inertial, when I run them through my equations, do they match the measured pixel positions?)</a></li><li><a href="#17">Skew Correction</a></li></ul></div><h2 id="1">Author: Tony Zheng</h2><pre class="codeinput">clear
+clc
+close <span class="string">all</span>
+</pre><h2 id="2">Mapping a forward distance (with no lateral movement) to a number of y_newPixels</h2><pre class="codeinput"><span class="comment">%xI = 1.5,2ft,2.5ft,3ft,3.5ft,4ft,4.5ft,5ft, yI=0</span>
+f = @(xy) [xy(:,1)-320,480-xy(:,2)];
+xpyp=[322,424;
+    320,358;
+    319,324;
+    318,303;
+    318,288;
+    316,278;
+    316,270;
+    316,263];
+xpyp=f(xpyp);
+xi = [1.5;2;2.5;3;3.5;4;4.5;5];
+xI_to_ynp_eq = polyfit([1.2;xi],[0;xpyp(:,2)],4);
+xI_to_ynp_vals =  polyval(xI_to_ynp_eq,0:.1:5);
+plot(xi,xpyp(:,2),[0:.1:5],xI_to_ynp_vals,<span class="string">'--'</span>)
+xlabel(<span class="string">'x_{Inertial} = 1 to 5 ft, y_{Inertial} = 0 ft'</span>)
+ylabel(<span class="string">'y_{newPixel}'</span>)
+title(<span class="string">'x_{Inertial} vs y_{newPixel} with a fixed 0 lateral distance'</span>)
+</pre><img vspace="5" hspace="5" src="Pixel_To_Distance_Conversion_Sol_01.png" style="width:560px;height:420px;" alt=""> <h2 id="3">Flipped axis to get the equation in reverse</h2><pre class="codeinput">figure
+ynp_to_xI_eq = polyfit([0;xpyp(:,2)],[1.2;xi],4);
+ynp_to_xI_vals = polyval(ynp_to_xI_eq,[0:220]);
+plot(xpyp(:,2),xi,[0:220],ynp_to_xI_vals,<span class="string">'--'</span>)
+ylabel(<span class="string">'x_{Inertial} = 1 to 5 ft, y_{Inertial} = 0 ft'</span>)
+xlabel(<span class="string">'y_{newPixel}'</span>)
+legend(<span class="string">'4th order polynomial'</span>,<span class="string">'Location'</span>,<span class="string">'Best'</span>)
+title(<span class="string">'FLIPPED:y_{newPixel} vs x_{Inertial} with a fixed 0 lateral distance'</span>)
+</pre><img vspace="5" hspace="5" src="Pixel_To_Distance_Conversion_Sol_02.png" style="width:560px;height:420px;" alt=""> <h2 id="4">Plotting the objects at varying y_Inertial for different x_Inertial</h2><p>xi = 2, yi by 0.25ft</p><pre class="codeinput">x2 = [320,358;
+      386,355
+      452,355;
+      522,354;
+      597,355;];
+x2 = f(x2);
+x2yI = [0;0.25;0.5;0.75;1];
+
+<span class="comment">%yi = .5,.75,1,1.5</span>
+x3 = [318,303;
+    399,301;
+    440,300;
+    481,299;
+    569,297;]
+x3yI = [0;0.5;0.75;1;1.5];
+x3=f(x3);
+    <span class="comment">%.5s</span>
+x4 = [316,278;
+    374,273;
+    432,272;
+    491,271;
+    555,271;]
+x4yI = [0;0.5;1;1.5;2];
+x4=f(x4);
+x5 = [316,263;
+    360,259;
+    406,259;
+    452,259;
+    495,257];
+x5yI = [0;0.5;1;1.5;2];
+x5=f(x5);
+figure
+plot(x2(:,1),x2(:,2),x3(:,1),x3(:,2),x4(:,1),x4(:,2),x5(:,1),x5(:,2))
+xlabel(<span class="string">'x_{newPixel}'</span>)
+ylabel(<span class="string">'y_{newPixel}'</span>)
+title(<span class="string">'Pixels only: x_{newPixel} vs y_{newPixel}'</span>)
+</pre><pre class="codeoutput">
+x3 =
+
+   318   303
+   399   301
+   440   300
+   481   299
+   569   297
+
+
+x4 =
+
+   316   278
+   374   273
+   432   272
+   491   271
+   555   271
+
+</pre><img vspace="5" hspace="5" src="Pixel_To_Distance_Conversion_Sol_03.png" style="width:560px;height:420px;" alt=""> <h2 id="5">Changing the previous plot to have the given y_Inertial rather than x_newPixel for the x axis</h2><pre class="codeinput">figure
+plot(x2yI,x2(:,2),x3yI,x3(:,2),x4yI,x4(:,2),x5yI,x5(:,2))
+xlabel(<span class="string">'-y_{Inertial}'</span>)
+ylabel(<span class="string">'y_{newPixel}'</span>)
+title(<span class="string">'Lateral motion: y_{Inertial} vs y_{newPixel}'</span>)
+</pre><img vspace="5" hspace="5" src="Pixel_To_Distance_Conversion_Sol_04.png" style="width:560px;height:420px;" alt=""> <h2 id="6">Offset each set of measurements at different x_Inertials so that the y_newPixel starts at 0 rather than the given y_newPixel (subtract each row by the first value)</h2><pre class="codeinput">yntrunc = @(xy) [xy(:,2)-xy(1,2)];
+y2 = yntrunc(x2);
+y3 = yntrunc(x3);
+y4 = yntrunc(x4);
+y5 = yntrunc(x5);
+
+figure
+plot(x2yI,y2,<span class="string">'r'</span>,x3yI,y3,<span class="string">'g'</span>,x4yI,y4,<span class="string">'b'</span>,x5yI,y5,<span class="string">'c'</span>)
+xlabel(<span class="string">'-y_{Inertial}'</span>)
+ylabel(<span class="string">'y_{newPixel}'</span>)
+<span class="comment">%legend('x_I = 2ft','x_I = 3ft','x_I = 4ft','x_I = 5ft')</span>
+title(<span class="string">'Lateral motion (pixel start at 0): y_{Inertial} vs y_{newPixel}'</span>)
+</pre><img vspace="5" hspace="5" src="Pixel_To_Distance_Conversion_Sol_05.png" style="width:560px;height:420px;" alt=""> <h2 id="7">Find a polynomial fit for all those data points</h2><pre class="codeinput">m_yiyp=@(yi,yp) polyfit(yi,yp,3);
+
+ m_yiyp2 = m_yiyp(x2yI,y2)
+ m_yiyp3 = m_yiyp(x3yI,y3)
+ m_yiyp4 = m_yiyp(x4yI,y4)
+ m_yiyp5 = m_yiyp(x5yI,y5)
+
+ x2m_yiyp = polyval(m_yiyp2,[0:0.1:x2yI(end)]);
+ x3m_yiyp = polyval(m_yiyp3,[0:0.1:x3yI(end)]);
+ x4m_yiyp = polyval(m_yiyp4,[0:0.1:x4yI(end)]);
+ x5m_yiyp = polyval(m_yiyp5,[0:0.1:x5yI(end)]);
+
+mall = m_yiyp([[0:0.1:x2yI(end)]';[0:0.1:x3yI(end)]';[0:0.1:x4yI(end)]';[0:0.1:x5yI(end)]'],[x2m_yiyp';x3m_yiyp';x4m_yiyp';x5m_yiyp']);
+
+xyall = polyval(mall,[[0:0.1:x2yI(end)]';[0:0.1:x3yI(end)]';[0:0.1:x4yI(end)]';[0:0.1:x5yI(end)]']);
+xxxyall = [[0:0.1:x2yI(end)]';[0:0.1:x3yI(end)]';[0:0.1:x4yI(end)]';[0:0.1:x5yI(end)]'];
+
+hold <span class="string">on</span>
+plot(xxxyall,xyall,<span class="string">'black*'</span>,[0:0.1:x2yI(end)],x2m_yiyp,<span class="string">'r--'</span>,[0:0.1:x3yI(end)],x3m_yiyp,<span class="string">'g--'</span>,[0:0.1:x4yI(end)],x4m_yiyp,<span class="string">'b--'</span>,[0:0.1:x5yI(end)],x5m_yiyp,<span class="string">'c--'</span>)
+legend(<span class="string">'x_I = 2ft'</span>,<span class="string">'x_I = 3ft'</span>,<span class="string">'x_I = 4ft'</span>,<span class="string">'x_I = 5ft'</span>,<span class="string">'3rd order poly'</span>,<span class="string">'Location'</span>,<span class="string">'best'</span>)
+</pre><pre class="codeoutput">
+m_yiyp2 =
+
+    5.3333  -16.0000   13.6667    0.1000
+
+
+m_yiyp3 =
+
+    0.0000   -0.0000    4.0000    0.0000
+
+
+m_yiyp4 =
+
+    2.0000   -8.8571   13.2143    0.0714
+
+
+m_yiyp5 =
+
+    4.0000  -13.1429   13.2857    0.0286
+
+</pre><img vspace="5" hspace="5" src="Pixel_To_Distance_Conversion_Sol_06.png" style="width:560px;height:420px;" alt=""> <h2 id="8">Plot the varying lateral distance y_Inertial vs. x_newPixel</h2><pre class="codeinput">figure
+plot(x2yI,x2(:,1),x3yI,x3(:,1),x4yI,x4(:,1),x5yI,x5(:,1))
+xlabel(<span class="string">'-y_{Inertial}'</span>)
+ylabel(<span class="string">'x_{newPixel}'</span>)
+</pre><img vspace="5" hspace="5" src="Pixel_To_Distance_Conversion_Sol_07.png" style="width:560px;height:420px;" alt=""> <h2 id="9">Calculate the slope of the line for each x_Inertial</h2><pre class="codeinput"> m=@(yi,xn) polyfit(yi,xn,1);
+ m2 = m(x2yI,x2(:,1))
+ m3 = m(x3yI,x3(:,1))
+ m4 = m(x4yI,x4(:,1))
+ m5 = m(x5yI,x5(:,1))
+
+ x2m = polyval(m2,x2yI);
+ x3m = polyval(m3,x3yI);
+ x4m = polyval(m4,x4yI);
+ x5m = polyval(m5,x5yI);
+</pre><pre class="codeoutput">
+m2 =
+
+  276.0000   -2.6000
+
+
+m3 =
+
+  167.0000   -3.8500
+
+
+m4 =
+
+  119.0000   -5.4000
+
+
+m5 =
+
+   90.0000   -4.2000
+
+</pre><h2 id="10">Taking a polyfit of each slope vs x_inertial</h2><pre class="codeinput">mlist = [2,m2(1);
+    3,m3(1);
+    4,m4(1);
+    5,m5(1)];
+mpoly = polyfit(mlist(:,1),mlist(:,2),3);
+mvals = polyval(mpoly,mlist(:,1));
+</pre><h2 id="11">Taking a polyfit of each offset vs x_inertial</h2><pre class="codeinput">blist = [2,m2(2);
+    3,m3(2);
+    4,m4(2);
+    5,m5(2)];
+bpoly = polyfit(blist(:,1),blist(:,2),3);
+bvals = polyval(bpoly,blist(:,1));
+
+<span class="comment">%plot(mlist(:,1),mlist(:,2),mlist(:,1),mvals)</span>
+<span class="comment">% 3rd order fit between the xI and m</span>
+</pre><h2 id="12">Example of an arbitrary x_inertial to see if it lines up with my expectations</h2><pre class="codeinput">yis = 0:.2:2;
+xnpis = polyval(mpoly,2.5)*yis+polyval(bpoly,2.5);
+hold <span class="string">on</span>
+plot(yis,xnpis)
+</pre><img vspace="5" hspace="5" src="Pixel_To_Distance_Conversion_Sol_08.png" style="width:560px;height:420px;" alt=""> <h2 id="13">Plotting the given x_inertials with my slope equation</h2><pre class="codeinput">hold <span class="string">on</span>
+plot(x2yI,x2m,<span class="string">'--'</span>,x3yI,x3m,<span class="string">'--'</span>,x4yI,x4m,<span class="string">'--'</span>,x5yI,x5m,<span class="string">'--'</span>)
+title(<span class="string">'Lateral motion: y_{Inertial} vs x_{newPixel} at varying forward distance'</span>)
+legend(<span class="string">'x_I = 2ft'</span>,<span class="string">'x_I = 3ft'</span>,<span class="string">'x_I = 4ft'</span>,<span class="string">'x_I = 5ft'</span>,<span class="string">'Test: x_I = 2.5ft'</span>,<span class="string">'Location'</span>,<span class="string">'best'</span>)
+</pre><img vspace="5" hspace="5" src="Pixel_To_Distance_Conversion_Sol_09.png" style="width:560px;height:420px;" alt=""> <h2 id="14">Plot slope vs x_inertial</h2><pre class="codeinput">figure
+plot(mlist(:,1),mlist(:,2))
+title(<span class="string">'Slope vs. x_{Inertial}'</span>)
+xlabel(<span class="string">'x_{Inertial}'</span>)
+ylabel(<span class="string">'Slope (x_{newPixel}/y_{Inertial})'</span>)
+</pre><img vspace="5" hspace="5" src="Pixel_To_Distance_Conversion_Sol_10.png" style="width:560px;height:420px;" alt=""> <h2 id="15">Plot offset B vs x_inertial</h2><pre class="codeinput">figure
+plot(blist(:,1),blist(:,2))
+title(<span class="string">'Offset b vs. x_{Inertial}'</span>)
+xlabel(<span class="string">'x_{Inertial}'</span>)
+ylabel(<span class="string">'b (x_{newPixel}/y_{Inertial})'</span>)
+</pre><img vspace="5" hspace="5" src="Pixel_To_Distance_Conversion_Sol_11.png" style="width:560px;height:420px;" alt=""> <h2 id="16">Plotting the original points (Given x_inertial and y_inertial, when I run them through my equations, do they match the measured pixel positions?)</h2><pre class="codeinput">figure
+calc_ynp_to_xI = @(ynp) polyval(ynp_to_xI_eq,ynp);
+calc_xnp_to_yI = @(xI,xnp) (xnp-polyval(bpoly,xI))./polyval(mpoly,xI);
+
+x2I = calc_ynp_to_xI(x2(:,2))
+y2I = calc_xnp_to_yI(x2I,x2(:,1))
+x2xI = 2*ones(length(x2yI),1);
+
+x3I = calc_ynp_to_xI(x3(:,2))
+y3I = calc_xnp_to_yI(x3I,x3(:,1))
+x3xI = 3*ones(length(x3yI),1);
+
+x4I = calc_ynp_to_xI(x4(:,2))
+y4I = calc_xnp_to_yI(x4I,x4(:,1))
+x4xI = 4*ones(length(x4yI),1);
+
+x5I = calc_ynp_to_xI(x5(:,2))
+y5I = calc_xnp_to_yI(x5I,x5(:,1))
+x5xI = 5*ones(length(x5yI),1);
+
+plot(x2yI,x2xI,<span class="string">'o'</span>,y2I,x2I,<span class="string">'x'</span>)
+hold <span class="string">on</span>
+plot(x3yI,x3xI,<span class="string">'o'</span>,y3I,x3I,<span class="string">'x'</span>)
+plot(x4yI,x4xI,<span class="string">'o'</span>,y4I,x4I,<span class="string">'x'</span>)
+plot(x5yI,x5xI,<span class="string">'o'</span>,y5I,x5I,<span class="string">'x'</span>)
+ylim([0 6])
+ylabel(<span class="string">'x_{Inertial}'</span>)
+xlabel(<span class="string">'-y_{Inertial}'</span>)
+title(<span class="string">'Skewed'</span>)
+</pre><pre class="codeoutput">
+x2I =
+
+    2.0279
+    2.0561
+    2.0561
+    2.0657
+    2.0561
+
+
+y2I =
+
+    0.0096
+    0.2564
+    0.5031
+    0.7688
+    1.0451
+
+
+x3I =
+
+    2.9761
+    3.0394
+    3.0722
+    3.1058
+    3.1754
+
+
+y3I =
+
+    0.0107
+    0.5049
+    0.7654
+    1.0331
+    1.6297
+
+
+x4I =
+
+    4.0218
+    4.3096
+    4.3709
+    4.4335
+    4.4335
+
+
+y4I =
+
+    0.0120
+    0.5408
+    1.0847
+    1.6554
+    2.2560
+
+
+x5I =
+
+    4.9829
+    5.2924
+    5.2924
+    5.2924
+    5.4564
+
+
+y5I =
+
+    0.0029
+    0.5426
+    1.1245
+    1.7065
+    2.4691
+
+</pre><img vspace="5" hspace="5" src="Pixel_To_Distance_Conversion_Sol_12.png" style="width:560px;height:420px;" alt=""> <h2 id="17">Skew Correction</h2><pre class="codeinput">calc_yI_yp_skew = @(yI) polyval(mall,yI);
+
+yp2skew = calc_yI_yp_skew(y2I)
+x2Iskew = calc_ynp_to_xI(x2(:,2)-yp2skew)
+y2Iskew = calc_xnp_to_yI(x2Iskew,x2(:,1))
+
+yp3skew = calc_yI_yp_skew(y3I)
+x3Iskew = calc_ynp_to_xI(x3(:,2)-yp3skew)
+y3Iskew = calc_xnp_to_yI(x3Iskew,x3(:,1))
+
+yp4skew = calc_yI_yp_skew(y4I)
+x4Iskew = calc_ynp_to_xI(x4(:,2)-yp4skew)
+y4Iskew = calc_xnp_to_yI(x4Iskew,x4(:,1))
+
+yp5skew = calc_yI_yp_skew(y5I)
+x5Iskew = calc_ynp_to_xI(x5(:,2)-yp5skew)
+y5Iskew = calc_xnp_to_yI(x5Iskew,x5(:,1))
+
+figure
+plot(x2yI,x2xI,<span class="string">'o'</span>,y2Iskew,x2Iskew,<span class="string">'x'</span>)
+hold <span class="string">on</span>
+plot(x3yI,x3xI,<span class="string">'o'</span>,y3Iskew,x3Iskew,<span class="string">'x'</span>)
+plot(x4yI,x4xI,<span class="string">'o'</span>,y4Iskew,x4Iskew,<span class="string">'x'</span>)
+plot(x5yI,x5xI,<span class="string">'o'</span>,y5Iskew,x5Iskew,<span class="string">'x'</span>)
+ylim([0 6])
+ylabel(<span class="string">'x_{Inertial}'</span>)
+xlabel(<span class="string">'-y_{Inertial}'</span>)
+title(<span class="string">'Corrected'</span>)
+</pre><pre class="codeoutput">
+yp2skew =
+
+    0.2863
+    2.1968
+    3.4719
+    4.3131
+    4.8041
+
+
+x2Iskew =
+
+    2.0253
+    2.0353
+    2.0236
+    2.0250
+    2.0115
+
+
+y2Iskew =
+
+    0.0096
+    0.2535
+    0.4941
+    0.7517
+    1.0196
+
+
+yp3skew =
+
+    0.2966
+    3.4794
+    4.3049
+    4.7880
+    5.5247
+
+
+x3Iskew =
+
+    2.9670
+    2.9312
+    2.9364
+    2.9520
+    2.9909
+
+
+y3Iskew =
+
+    0.0106
+    0.4808
+    0.7207
+    0.9663
+    1.5081
+
+
+yp4skew =
+
+    0.3082
+    3.6208
+    4.8550
+    5.5702
+    7.7458
+
+
+x4Iskew =
+
+    4.0050
+    4.0982
+    4.0850
+    4.1010
+    3.9814
+
+
+y4Iskew =
+
+    0.0118
+    0.5126
+    1.0091
+    1.5224
+    2.0101
+
+
+yp5skew =
+
+    0.2241
+    3.6274
+    4.9030
+    5.6686
+    9.2793
+
+
+x5Iskew =
+
+    4.9663
+    5.0107
+    4.9164
+    4.8609
+    4.7469
+
+
+y5Iskew =
+
+    0.0035
+    0.4927
+    0.9758
+    1.4466
+    1.8387
+
+</pre><img vspace="5" hspace="5" src="Pixel_To_Distance_Conversion_Sol_13.png" style="width:560px;height:420px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Author: Tony Zheng
+clear
+clc
+close all
+
+%% Mapping a forward distance (with no lateral movement) to a number of y_newPixels
+%xI = 1.5,2ft,2.5ft,3ft,3.5ft,4ft,4.5ft,5ft, yI=0
+f = @(xy) [xy(:,1)-320,480-xy(:,2)];
+xpyp=[322,424;
+    320,358;
+    319,324;
+    318,303;
+    318,288;
+    316,278;
+    316,270;
+    316,263];
+xpyp=f(xpyp);
+xi = [1.5;2;2.5;3;3.5;4;4.5;5];
+xI_to_ynp_eq = polyfit([1.2;xi],[0;xpyp(:,2)],4);
+xI_to_ynp_vals =  polyval(xI_to_ynp_eq,0:.1:5);
+plot(xi,xpyp(:,2),[0:.1:5],xI_to_ynp_vals,'REPLACE_WITH_DASH_DASH')
+xlabel('x_{Inertial} = 1 to 5 ft, y_{Inertial} = 0 ft')
+ylabel('y_{newPixel}')
+title('x_{Inertial} vs y_{newPixel} with a fixed 0 lateral distance')
+
+
+%% Flipped axis to get the equation in reverse
+figure
+ynp_to_xI_eq = polyfit([0;xpyp(:,2)],[1.2;xi],4);
+ynp_to_xI_vals = polyval(ynp_to_xI_eq,[0:220]);
+plot(xpyp(:,2),xi,[0:220],ynp_to_xI_vals,'REPLACE_WITH_DASH_DASH')
+ylabel('x_{Inertial} = 1 to 5 ft, y_{Inertial} = 0 ft')
+xlabel('y_{newPixel}')
+legend('4th order polynomial','Location','Best')
+title('FLIPPED:y_{newPixel} vs x_{Inertial} with a fixed 0 lateral distance')
+
+%% Plotting the objects at varying y_Inertial for different x_Inertial 
+% xi = 2, yi by 0.25ft
+x2 = [320,358;
+      386,355
+      452,355;
+      522,354;
+      597,355;];
+x2 = f(x2);
+x2yI = [0;0.25;0.5;0.75;1];
+
+%yi = .5,.75,1,1.5
+x3 = [318,303;
+    399,301;
+    440,300;
+    481,299;
+    569,297;]
+x3yI = [0;0.5;0.75;1;1.5];
+x3=f(x3);
+    %.5s
+x4 = [316,278;
+    374,273;
+    432,272;
+    491,271;
+    555,271;]
+x4yI = [0;0.5;1;1.5;2];
+x4=f(x4);
+x5 = [316,263;
+    360,259;
+    406,259;
+    452,259;
+    495,257];
+x5yI = [0;0.5;1;1.5;2];
+x5=f(x5);
+figure
+plot(x2(:,1),x2(:,2),x3(:,1),x3(:,2),x4(:,1),x4(:,2),x5(:,1),x5(:,2))
+xlabel('x_{newPixel}')
+ylabel('y_{newPixel}')  
+title('Pixels only: x_{newPixel} vs y_{newPixel}')
+
+%% Changing the previous plot to have the given y_Inertial rather than x_newPixel for the x axis
+figure
+plot(x2yI,x2(:,2),x3yI,x3(:,2),x4yI,x4(:,2),x5yI,x5(:,2))
+xlabel('-y_{Inertial}')
+ylabel('y_{newPixel}')  
+title('Lateral motion: y_{Inertial} vs y_{newPixel}')
+
+%% Offset each set of measurements at different x_Inertials so that the y_newPixel starts at 0 rather than the given y_newPixel (subtract each row by the first value)
+yntrunc = @(xy) [xy(:,2)-xy(1,2)];
+y2 = yntrunc(x2);
+y3 = yntrunc(x3);
+y4 = yntrunc(x4);
+y5 = yntrunc(x5);
+
+figure
+plot(x2yI,y2,'r',x3yI,y3,'g',x4yI,y4,'b',x5yI,y5,'c')
+xlabel('-y_{Inertial}')
+ylabel('y_{newPixel}') 
+%legend('x_I = 2ft','x_I = 3ft','x_I = 4ft','x_I = 5ft')
+title('Lateral motion (pixel start at 0): y_{Inertial} vs y_{newPixel}')
+
+%% Find a polynomial fit for all those data points
+m_yiyp=@(yi,yp) polyfit(yi,yp,3);
+
+ m_yiyp2 = m_yiyp(x2yI,y2)
+ m_yiyp3 = m_yiyp(x3yI,y3)
+ m_yiyp4 = m_yiyp(x4yI,y4)
+ m_yiyp5 = m_yiyp(x5yI,y5)
+ 
+ x2m_yiyp = polyval(m_yiyp2,[0:0.1:x2yI(end)]);
+ x3m_yiyp = polyval(m_yiyp3,[0:0.1:x3yI(end)]);
+ x4m_yiyp = polyval(m_yiyp4,[0:0.1:x4yI(end)]);
+ x5m_yiyp = polyval(m_yiyp5,[0:0.1:x5yI(end)]);
+ 
+mall = m_yiyp([[0:0.1:x2yI(end)]';[0:0.1:x3yI(end)]';[0:0.1:x4yI(end)]';[0:0.1:x5yI(end)]'],[x2m_yiyp';x3m_yiyp';x4m_yiyp';x5m_yiyp']);
+
+xyall = polyval(mall,[[0:0.1:x2yI(end)]';[0:0.1:x3yI(end)]';[0:0.1:x4yI(end)]';[0:0.1:x5yI(end)]']);
+xxxyall = [[0:0.1:x2yI(end)]';[0:0.1:x3yI(end)]';[0:0.1:x4yI(end)]';[0:0.1:x5yI(end)]'];
+
+hold on
+plot(xxxyall,xyall,'black*',[0:0.1:x2yI(end)],x2m_yiyp,'rREPLACE_WITH_DASH_DASH',[0:0.1:x3yI(end)],x3m_yiyp,'gREPLACE_WITH_DASH_DASH',[0:0.1:x4yI(end)],x4m_yiyp,'bREPLACE_WITH_DASH_DASH',[0:0.1:x5yI(end)],x5m_yiyp,'cREPLACE_WITH_DASH_DASH')
+legend('x_I = 2ft','x_I = 3ft','x_I = 4ft','x_I = 5ft','3rd order poly','Location','best')
+
+%% Plot the varying lateral distance y_Inertial vs. x_newPixel
+
+figure
+plot(x2yI,x2(:,1),x3yI,x3(:,1),x4yI,x4(:,1),x5yI,x5(:,1))
+xlabel('-y_{Inertial}')
+ylabel('x_{newPixel}')  
+
+%% Calculate the slope of the line for each x_Inertial
+ m=@(yi,xn) polyfit(yi,xn,1);
+ m2 = m(x2yI,x2(:,1))
+ m3 = m(x3yI,x3(:,1))
+ m4 = m(x4yI,x4(:,1))
+ m5 = m(x5yI,x5(:,1))
+ 
+ x2m = polyval(m2,x2yI);
+ x3m = polyval(m3,x3yI);
+ x4m = polyval(m4,x4yI);
+ x5m = polyval(m5,x5yI);
+ 
+%% Taking a polyfit of each slope vs x_inertial
+mlist = [2,m2(1);
+    3,m3(1);
+    4,m4(1);
+    5,m5(1)];
+mpoly = polyfit(mlist(:,1),mlist(:,2),3);
+mvals = polyval(mpoly,mlist(:,1));
+
+%% Taking a polyfit of each offset vs x_inertial
+blist = [2,m2(2);
+    3,m3(2);
+    4,m4(2);
+    5,m5(2)];
+bpoly = polyfit(blist(:,1),blist(:,2),3);
+bvals = polyval(bpoly,blist(:,1));
+
+%plot(mlist(:,1),mlist(:,2),mlist(:,1),mvals)
+% 3rd order fit between the xI and m
+
+%% Example of an arbitrary x_inertial to see if it lines up with my expectations
+yis = 0:.2:2;
+xnpis = polyval(mpoly,2.5)*yis+polyval(bpoly,2.5);
+hold on
+plot(yis,xnpis)
+
+%% Plotting the given x_inertials with my slope equation
+hold on
+plot(x2yI,x2m,'REPLACE_WITH_DASH_DASH',x3yI,x3m,'REPLACE_WITH_DASH_DASH',x4yI,x4m,'REPLACE_WITH_DASH_DASH',x5yI,x5m,'REPLACE_WITH_DASH_DASH')
+title('Lateral motion: y_{Inertial} vs x_{newPixel} at varying forward distance')
+legend('x_I = 2ft','x_I = 3ft','x_I = 4ft','x_I = 5ft','Test: x_I = 2.5ft','Location','best')
+
+%% Plot slope vs x_inertial
+figure
+plot(mlist(:,1),mlist(:,2))
+title('Slope vs. x_{Inertial}')
+xlabel('x_{Inertial}')
+ylabel('Slope (x_{newPixel}/y_{Inertial})')
+
+%% Plot offset B vs x_inertial
+figure
+plot(blist(:,1),blist(:,2))
+title('Offset b vs. x_{Inertial}')
+xlabel('x_{Inertial}')
+ylabel('b (x_{newPixel}/y_{Inertial})')
+
+%% Plotting the original points (Given x_inertial and y_inertial, when I run them through my equations, do they match the measured pixel positions?)
+figure
+calc_ynp_to_xI = @(ynp) polyval(ynp_to_xI_eq,ynp);
+calc_xnp_to_yI = @(xI,xnp) (xnp-polyval(bpoly,xI))./polyval(mpoly,xI);
+
+x2I = calc_ynp_to_xI(x2(:,2))
+y2I = calc_xnp_to_yI(x2I,x2(:,1))
+x2xI = 2*ones(length(x2yI),1);
+
+x3I = calc_ynp_to_xI(x3(:,2))
+y3I = calc_xnp_to_yI(x3I,x3(:,1))
+x3xI = 3*ones(length(x3yI),1);
+
+x4I = calc_ynp_to_xI(x4(:,2))
+y4I = calc_xnp_to_yI(x4I,x4(:,1))
+x4xI = 4*ones(length(x4yI),1);
+
+x5I = calc_ynp_to_xI(x5(:,2))
+y5I = calc_xnp_to_yI(x5I,x5(:,1))
+x5xI = 5*ones(length(x5yI),1);
+
+plot(x2yI,x2xI,'o',y2I,x2I,'x')
+hold on 
+plot(x3yI,x3xI,'o',y3I,x3I,'x')
+plot(x4yI,x4xI,'o',y4I,x4I,'x')
+plot(x5yI,x5xI,'o',y5I,x5I,'x')
+ylim([0 6])
+ylabel('x_{Inertial}')
+xlabel('-y_{Inertial}')
+title('Skewed')
+
+%% Skew Correction
+calc_yI_yp_skew = @(yI) polyval(mall,yI);
+
+yp2skew = calc_yI_yp_skew(y2I)
+x2Iskew = calc_ynp_to_xI(x2(:,2)-yp2skew)
+y2Iskew = calc_xnp_to_yI(x2Iskew,x2(:,1))
+
+yp3skew = calc_yI_yp_skew(y3I)
+x3Iskew = calc_ynp_to_xI(x3(:,2)-yp3skew)
+y3Iskew = calc_xnp_to_yI(x3Iskew,x3(:,1))
+
+yp4skew = calc_yI_yp_skew(y4I)
+x4Iskew = calc_ynp_to_xI(x4(:,2)-yp4skew)
+y4Iskew = calc_xnp_to_yI(x4Iskew,x4(:,1))
+
+yp5skew = calc_yI_yp_skew(y5I)
+x5Iskew = calc_ynp_to_xI(x5(:,2)-yp5skew)
+y5Iskew = calc_xnp_to_yI(x5Iskew,x5(:,1))
+
+figure
+plot(x2yI,x2xI,'o',y2Iskew,x2Iskew,'x')
+hold on 
+plot(x3yI,x3xI,'o',y3Iskew,x3Iskew,'x')
+plot(x4yI,x4xI,'o',y4Iskew,x4Iskew,'x')
+plot(x5yI,x5xI,'o',y5Iskew,x5Iskew,'x')
+ylim([0 6])
+ylabel('x_{Inertial}')
+xlabel('-y_{Inertial}')
+title('Corrected')
+##### SOURCE END #####
+--></body></html>

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Author: Tony Zheng
-# MEC231A BARC Project 
+# MEC231A BARC Project
 
 import rospy
 import time
@@ -46,7 +46,7 @@ def enc_callback(data):
     # compute time elapsed
     tf = time.time()
     dt = tf - t0
-    
+
     # compute speed with second-order, backwards-finite-difference estimate
     v_meas    = r_tire*(3*ang_mean - 4*ang_km1 + ang_km2)/(2*dt)
     # rospy.logwarn("speed = {}".format(v_meas))
@@ -103,10 +103,10 @@ class PID():
 
     def acc_calculate(self, speed_reference, speed_current):
         self.error = speed_reference - speed_current
-        
+
         # Propotional control
         self.P_effect = self.kp*self.error
-        
+
         # Integral control
         self.integrator = self.integrator + self.error
         ## Anti windup
@@ -115,14 +115,14 @@ class PID():
         if self.integrator <= self.integrator_min:
             self.integrator = self.integrator_min
         self.I_effect = self.ki*self.integrator
-        
+
         # Derivative control
         self.derivator = self.error - self.derivator
         self.D_effect = self.kd*self.derivator
         self.derivator = self.error
 
         acc = self.P_effect + self.I_effect + self.D_effect
-        
+
         if acc <= 0:
             acc = 20
         return acc
@@ -131,12 +131,12 @@ class PID():
 def inputToPWM():
     global motor_pwm, servo_pwm, motor_pwm_offset, servo_pwm_offset
     global v_ref, v_meas
-    
+
     # initialize node
     rospy.init_node('inputToPWM', anonymous=True)
-    
+
     global pubname , newECU , subname, move , still_moving
-    newECU = ECU() 
+    newECU = ECU()
     newECU.motor = 1500
     newECU.servo = 1550
     move = False
@@ -154,7 +154,7 @@ def inputToPWM():
     ts          = 1.0 / loop_rate
     rate        = rospy.Rate(loop_rate)
     t0          = time.time()
-     
+
     # Initialize the PID controller
     longitudinal_control = PID(kp=70, ki=5, kd=1)
     maxspeed = 1650

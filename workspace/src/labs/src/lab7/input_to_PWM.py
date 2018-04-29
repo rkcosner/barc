@@ -23,40 +23,6 @@ thetaL2     = 0
 thetaR1     = 0
 thetaR2     = 0
 
-# ===================================PID longitudinal controller================================#
-class PID():
-    def __init__(self, kp=1, ki=1, kd=1, integrator=0, derivator=0):
-        self.kp = kp
-        self.ki = ki
-        self.kd = kd
-        self.integrator = integrator
-        self.derivator = derivator
-        self.integrator_max = 30
-        self.integrator_min = -30
-
-    def acc_calculate(self, speed_reference, speed_current):
-        self.error = speed_reference - speed_current
-
-        # Propotional control
-        self.P_effect = self.kp*self.error
-
-        # Integral control
-        self.integrator = self.integrator + self.error
-        ## Anti windup
-        if self.integrator >= self.integrator_max:
-            self.integrator = self.integrator_max
-        if self.integrator <= self.integrator_min:
-            self.integrator = self.integrator_min
-        self.I_effect = self.ki*self.integrator
-
-        # Derivative control
-        self.derivator = self.error - self.derivator
-        self.D_effect = self.kd*self.derivator
-        self.derivator = self.error
-
-        acc = self.P_effect + self.I_effect + self.D_effect
-        return acc
-
 def start_callback(data):
     global move, still_moving
     #print("2")
@@ -112,12 +78,49 @@ def callback_function(data):
 
     pubname.publish(newECU)
 
+# ===================================PID longitudinal controller================================#
+class PID():
+    def __init__(self, kp=1, ki=1, kd=1, integrator=0, derivator=0):
+        self.kp = kp
+        self.ki = ki
+        self.kd = kd
+        self.integrator = integrator
+        self.derivator = derivator
+        self.integrator_max = 30
+        self.integrator_min = -30
+
+    def acc_calculate(self, speed_reference, speed_current):
+        self.error = speed_reference - speed_current
+
+        # Propotional control
+        self.P_effect = self.kp*self.error
+
+        # Integral control
+        self.integrator = self.integrator + self.error
+        ## Anti windup
+        if self.integrator >= self.integrator_max:
+            self.integrator = self.integrator_max
+        if self.integrator <= self.integrator_min:
+            self.integrator = self.integrator_min
+        self.I_effect = self.ki*self.integrator
+
+        # Derivative control
+        self.derivator = self.error - self.derivator
+        self.D_effect = self.kd*self.derivator
+        self.derivator = self.error
+
+        acc = self.P_effect + self.I_effect + self.D_effect
+        return acc
+
+
+
 def inputToPWM():
+    global pubname , newECU , subname, move , still_moving, v_meas, v_ref
+    global motor_pwm, servo_pwm, motor_pwm_offset, servo_pwm_offset
 
     # initialize node
     rospy.init_node('inputToPWM', anonymous=True)
 
-    global pubname , newECU , subname, move , still_moving, v_meas
     newECU = ECU()
     newECU.motor = 1500
     newECU.servo = 1550
@@ -138,7 +141,7 @@ def inputToPWM():
     rospy.Subscriber('encoder', Encoder, encoder_callback_function)
 
     # set node rate
-    loop_rate   = 5 
+    loop_rate   = 5
     ts          = 1.0 / loop_rate
     rate        = rospy.Rate(loop_rate)
     t0          = time.time()
