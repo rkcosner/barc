@@ -59,17 +59,22 @@ def encoder_callback_function(data):
 # update
 def callback_function(data):
     global move, still_moving, v_meas, newECU, pubname, v_ref
-    ################################################################################################################################################
+    #######################################################################
     # Convert the velocity into motorPWM and steering angle into servoPWM
-    a_servo, b_servo = -0.0006100255, 0.96345
-    a_servo *= 0.98
-    b_servo *= 0.94
-    newECU.servo = (data.delta - b_servo) / a_servo
+    # a_servo, b_servo = -0.0006100255, 0.96345
+    # a_servo *= 0.98
+    # b_servo *= 0.94
+    # newECU.servo = (data.delta - b_servo) / a_servo
+    aa = -1672.7
+    bb = 1514.9
+    aa *= 0.9 # vary this parameter
+
+    newECU.servo = aa*data.delta + bb
     rospy.logwarn('servo_pwm = {}'.format(newECU.servo))
     # newECU.servo = (newECU.servo - 1512) / 2 + 1512
 
     v_ref = data.vel
-    #################################################################################################################################################
+    ########################################################################
 
     servomax = 1800
     servomin = 1200
@@ -80,7 +85,7 @@ def callback_function(data):
 
     pubname.publish(newECU)
 
-# ===================================PID longitudinal controller================================#
+# ==========================PID longitudinal controller========================#
 class PID():
     def __init__(self, kp=1, ki=1, kd=1, integrator=0, derivator=0):
         self.kp = kp
