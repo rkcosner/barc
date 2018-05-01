@@ -38,11 +38,11 @@ class image_processing_node():
         self.v_ref = 1
 
         # Number of moving average points
-        self.sx = 5 # TODO(nish): try changing to 10
+        self.sx = 7 # TODO(nish): try changing to 10
         self.movmean = np.zeros([2,self.sx])
 
         # Set node rate
-        self.loop_rate   = 70
+        self.loop_rate   = 50
         self.ts          = 1.0 / self.loop_rate
         self.rate        = rospy.Rate(self.loop_rate)
         self.t0          = time.time()
@@ -104,23 +104,23 @@ class image_processing_node():
                     #######cv2.imshow('hsv',hsv[270:480,:])
 
                     # define range of yellow color in HSV (B,G,R)
-                    lower_yellow = np.array([0,180,100])
-                    upper_yellow = np.array([50,255,255])
+                    #lower_yellow = np.array([0,180,100])
+                    #upper_yellow = np.array([50,255,255])
 
                     # Threshold the HSV image to get only yellow colors
-                    edges = cv2.inRange(hsv, lower_yellow, upper_yellow) #0.03s
+                    #edges = cv2.inRange(hsv, lower_yellow, upper_yellow) #0.03s
                     
                     # define range of edge color in HSV (B,G,R)
-                    # lower_red = np.array([0,0,180])
-                    # upper_red = np.array([130,80,255])
+                    lower_red = np.array([0,0,180])
+                    upper_red = np.array([130,80,255])
                     #                                                             
-                    # lower_white = np.array([0,200,200])
-                    # upper_white = np.array([80,255,255])
+                    lower_white = np.array([0,200,200])
+                    upper_white = np.array([80,255,255])
 
                     # # Threshold the HSV image to get only edge colors
-                    # reds = cv2.inRange(hsv, lower_red, upper_red)
-                    # whites = cv2.inRange(hsv, lower_white, upper_white) #0.03s
-                    # edges = cv2.bitwise_or(reds,whites)
+                    reds = cv2.inRange(hsv, lower_red, upper_red)
+                    whites = cv2.inRange(hsv, lower_white, upper_white) #0.03s
+                    edges = cv2.bitwise_or(reds,whites)
 
                     edges = cv2.GaussianBlur(edges,(kernel_size,kernel_size),0)
                     #edges = cv2.Canny(edges,10,200)
@@ -379,8 +379,10 @@ class image_processing_node():
                 dt = self.dt
                 lr = 0.15
                 lf = 0.15
-                j = 3
-                interval = 2
+                j = 4
+
+                interval = 1
+
                 x_ref_for_radius = [x_ref[j+interval],x_ref[j+interval*2]]
                 y_ref_for_radius = [y_ref[j+interval],y_ref[j+interval*2]]
                 x_ref_for_radius = np.append(x_ref[j],x_ref_for_radius)
@@ -428,7 +430,7 @@ class image_processing_node():
 
                 # Large weights on x, y (first two diags of Q), small weights on R.
                 Q = np.matrix([[50, 0, 0],[0, 50, 0],[0, 0, 0]]);
-                R = np.matrix([[25, 0],[0, 5]]);
+                R = np.matrix([[25, 0],[0, 1]]);
                 R *= 1
 
                 # Compute the LQR controller

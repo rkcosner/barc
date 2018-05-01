@@ -67,7 +67,7 @@ def callback_function(data):
     # newECU.servo = (data.delta - b_servo) / a_servo
     aa = -1672.7
     bb = 1511
-    aa *= 0.75 # vary this parameter
+    aa *= 0.80 # vary this parameter
     # bb *= 0.93
     newECU.servo = aa*data.delta + bb
     rospy.logwarn('delta = {}'.format(data.delta))
@@ -172,7 +172,7 @@ def inputToPWM():
             newECU.servo = 1550
 
         pubname.publish(newECU)
-
+        # rospy.logwarn('{}'.format(newECU.motor))
         # wait
         rate.sleep()
 
