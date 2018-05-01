@@ -122,9 +122,6 @@ class image_processing_node():
                     # whites = cv2.inRange(hsv, lower_white, upper_white) #0.03s
                     # edges = cv2.bitwise_or(reds,whites)
 
-                    #edges = cv2.cvtColor(edges, cv2.COLOR_BGR2GRAY)
-                    #cv2.imshow("hsv to gray",edges)
-                    #cv2.imshow("Edges",edges[270:480,:])
                     edges = cv2.GaussianBlur(edges,(kernel_size,kernel_size),0)
                     #edges = cv2.Canny(edges,10,200)
                     cv2.imshow("Edges2",edges[270:480,:])
