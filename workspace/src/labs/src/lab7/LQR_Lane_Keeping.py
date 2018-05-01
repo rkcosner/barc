@@ -103,16 +103,28 @@ class image_processing_node():
                     #hsv = cv2.GaussianBlur(hsv,(kernel_size,kernel_size),0)
                     #######cv2.imshow('hsv',hsv[270:480,:])
 
+                    """
                     # define range of yellow color in HSV (B,G,R)
                     lower_yellow = np.array([0,180,100])
                     upper_yellow = np.array([50,255,255])
 
                     # Threshold the HSV image to get only yellow colors
                     edges = cv2.inRange(hsv, lower_yellow, upper_yellow) #0.03s
+                    """
 
-                    #edges = cv2.cvtColor(edges, cv2.COLOR_BGR2GRAY)
-                    #cv2.imshow("hsv to gray",edges)
-                    #cv2.imshow("Edges",edges[270:480,:])
+                    # define range of edge color in HSV (B,G,R)
+                    lower_red = np.array([0,0,180])
+                    upper_red = np.array([130,80,255])
+
+                    lower_white = np.array([0,200,200])
+                    upper_white = np.array([80,255,255])
+
+                    # Threshold the HSV image to get only edge colors
+                    reds = cv2.inRange(hsv, lower_red, upper_red)
+                    whites = cv2.inRange(hsv, lower_white, upper_white) #0.03s
+
+                    edges = cv2.bitwise_or(reds,whites)
+
                     edges = cv2.GaussianBlur(edges,(kernel_size,kernel_size),0)
                     #edges = cv2.Canny(edges,10,200)
                     cv2.imshow("Edges2",edges[270:480,:])
