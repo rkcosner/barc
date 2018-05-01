@@ -12,7 +12,7 @@ from numpy import pi
 v_meas      = 0.0
 t0          = time.time()
 r_tire      = 0.05 # radius of the tire
-servo_pwm   = 1523.0
+servo_pwm   = 1511.0
 motor_pwm   = 1500.0
 motor_pwm_offset = 1500.0
 
@@ -66,11 +66,12 @@ def callback_function(data):
     # b_servo *= 0.94
     # newECU.servo = (data.delta - b_servo) / a_servo
     aa = -1672.7
-    bb = 1514.9
-    aa *= 0.9 # vary this parameter
-
+    bb = 1511
+    aa *= 0.75 # vary this parameter
+    # bb *= 0.93
     newECU.servo = aa*data.delta + bb
-    rospy.logwarn('servo_pwm = {}'.format(newECU.servo))
+    rospy.logwarn('delta = {}'.format(data.delta))
+    rospy.logwarn('servo_pwm = {}\n'.format(newECU.servo))
     # newECU.servo = (newECU.servo - 1512) / 2 + 1512
 
     v_ref = data.vel
@@ -145,7 +146,7 @@ def inputToPWM():
     rospy.Subscriber('encoder', Encoder, encoder_callback_function)
 
     # set node rate
-    loop_rate   = 10  # TODO(nish): raise sample rate
+    loop_rate   = 20  # TODO(nish): raise sample rate
     ts          = 1.0 / loop_rate
     rate        = rospy.Rate(loop_rate)
     t0          = time.time()
@@ -156,10 +157,10 @@ def inputToPWM():
 
     while not rospy.is_shutdown():
         # calculate acceleration from PID controller
-        rospy.logwarn('v_ref = {}, v_meas = {}'.format(v_ref, v_meas))
+        # rospy.logwarn('v_ref = {}, v_meas = {}'.format(v_ref, v_meas))
         # motor_pwm = PID_control.acc_calculate(v_ref, v_meas) + motor_pwm_offset
         # newECU.motor = motor_pwm
-        newECU.motor = 1570
+        newECU.motor = 1575
 
         # safety check
         if (newECU.motor<minspeed):
