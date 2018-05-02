@@ -158,9 +158,9 @@ def inputToPWM():
     while not rospy.is_shutdown():
         # calculate acceleration from PID controller
         # rospy.logwarn('v_ref = {}, v_meas = {}'.format(v_ref, v_meas))
-        # motor_pwm = PID_control.acc_calculate(v_ref, v_meas) + motor_pwm_offset
+        # motor_pwm = PIDcontrol.acc_calculate(v_ref, v_meas) + motor_pwm_offset
         # newECU.motor = motor_pwm
-        newECU.motor = 1575
+        newECU.motor = 1573
 
         # safety check
         if (newECU.motor<minspeed):
