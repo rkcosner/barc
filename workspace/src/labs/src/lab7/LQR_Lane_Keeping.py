@@ -370,7 +370,11 @@ class image_processing_node():
     def calc_y_newPixel_to_x_Inertial(self,y_newPixel):
         # Transforms the ynewpixel into xinertial frame
         x_Inertial = 8.917E-9*y_newPixel**4 + -7.8875E-7*y_newPixel**3 + -0.0001258*y_newPixel**2 + 0.028327*y_newPixel
-        x_Inertial=x_Inertial*0.3048 #convert ft to m
+        # x_Inertial_test = 3.767535E-9*y_newPixel**4 + -1.8816308E-6*y_newPixel**3 + 0.0003606144*y_newPixel**2 + -0.024835717*y_newPixel**1 + 0.92770404385
+        # theirs = 6.411145E-9*y_newPixel**4 -1.98328E-6*y_newPixel**3 + 0.0002174*y_newPixel**2 - 0.00187*y_newPixel + 1.2013
+        # x_Inertial = theirs
+        # rospy.logwarn('{}, {}, {}'.format(x_Inertial, x_Inertial_test, theirs))
+        x_Inertial = x_Inertial*0.3048 #convert ft to m
         return x_Inertial
     #########################################################################
     def compute_uOpt(self,x_ref,y_ref,v_ref):

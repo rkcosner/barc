@@ -70,8 +70,8 @@ def callback_function(data):
     aa *= 0.80 # vary this parameter
     # bb *= 0.93
     newECU.servo = aa*data.delta + bb
-    rospy.logwarn('delta = {}'.format(data.delta))
-    rospy.logwarn('servo_pwm = {}\n'.format(newECU.servo))
+    # rospy.logwarn('delta = {}'.format(data.delta))
+    # rospy.logwarn('servo_pwm = {}\n'.format(newECU.servo))
     # newECU.servo = (newECU.servo - 1512) / 2 + 1512
 
     v_ref = data.vel
@@ -160,7 +160,7 @@ def inputToPWM():
         # rospy.logwarn('v_ref = {}, v_meas = {}'.format(v_ref, v_meas))
         # motor_pwm = PIDcontrol.acc_calculate(v_ref, v_meas) + motor_pwm_offset
         # newECU.motor = motor_pwm
-        newECU.motor = 1573
+        newECU.motor = 1578
 
         # safety check
         if (newECU.motor<minspeed):
@@ -173,7 +173,7 @@ def inputToPWM():
 
         pubname.publish(newECU)
         # rospy.logwarn('{}'.format(newECU.motor))
-        # wait
+        # rospy.logwarn('{}'.format(move))# wait
         rate.sleep()
 
 
