@@ -1,5 +1,4 @@
 <launch>
-
   <node pkg="labs" type="LQR_Lane_Keeping.py" name="image_processing" output="screen">
     <param name="display_image" value="True" type="boolean"/>
     <param name="publish_image" value="False" type="boolean"/>

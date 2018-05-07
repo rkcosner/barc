@@ -160,7 +160,7 @@ def inputToPWM():
         # rospy.logwarn('v_ref = {}, v_meas = {}'.format(v_ref, v_meas))
         # motor_pwm = PIDcontrol.acc_calculate(v_ref, v_meas) + motor_pwm_offset
         # newECU.motor = motor_pwm
-        newECU.motor = 1578
+        newECU.motor = 1576
 
         # safety check
         if (newECU.motor<minspeed):

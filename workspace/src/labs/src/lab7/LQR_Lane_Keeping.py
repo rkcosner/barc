@@ -91,7 +91,7 @@ class image_processing_node():
 
                 # yellow = True makes the edge detection search for a yellow track using HSV. False will use grayscale and search for any edge regardless of color
                 yellow = True
-                kernel_size = 7
+                kernel_size = 13 
                 if yellow:
                     cropped = self.cv_image
                     cropped[0:280,0:640] = 0
@@ -101,7 +101,7 @@ class image_processing_node():
                     hsv = cv2.cvtColor(cropped, cv2.COLOR_BGR2HSV) #.004
 
                     #hsv = cv2.GaussianBlur(hsv,(kernel_size,kernel_size),0)
-                    #######cv2.imshow('hsv',hsv[270:480,:])
+                    cv2.imshow('hsv',hsv[270:480,:])
 
                     # define range of yellow color in HSV (B,G,R)
                     #lower_yellow = np.array([0,180,100])
